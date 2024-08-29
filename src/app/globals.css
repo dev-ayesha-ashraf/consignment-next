@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+hr{
+  margin-top: 20px;
+  color: black;
+  border: 2px solid black;
+}
+.pdf h2,.pdf p{
+  margin: auto;
+  width: 70vw;
+  font-size: 23px;
+}
+.pdf p{
+  text-align: left;
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
