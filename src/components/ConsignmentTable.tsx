@@ -1,7 +1,7 @@
 import { useAuthContext } from "@/context/AuthContext";
 import useConsignment from "@/hooks/useConsignment";
 import useLoader from "@/hooks/useLoader";
-import useGenerateFormPdf from "@/hooks/useGenerateFormPdf"; 
+import useGenerateFormPdf from "@/hooks/useGenerateFormPdf";
 import Loader from "@/components/Loader";
 import React, { useEffect, useState } from "react";
 
@@ -9,7 +9,7 @@ const ConsignmentTable = () => {
   const { getAll, consignments, handleChange, update } = useConsignment();
   const { user } = useAuthContext();
   const { loading, showLoader, hideLoader } = useLoader();
-  const { generatePdf } = useGenerateFormPdf(); 
+  const { generatePdf } = useGenerateFormPdf();
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,22 +29,24 @@ const ConsignmentTable = () => {
   const downloadPDF = (consignment: any) => {
     const date = new Date(consignment.createdAt);
     const formattedDate = date.toLocaleDateString();
-    const day = date.toLocaleDateString(undefined, { weekday: 'long' }); 
-  
+    const day = date.toLocaleDateString(undefined, { weekday: 'long' });
+
     const formData = {
       pickUp: {
         name: consignment.pickUpId?.name || "N/A",
+        address: consignment.pickUpId?.address || "N/A",
         phone: consignment.pickUpId?.phone || "N/A",
       },
       dropOff: {
         name: consignment.dropOffId?.name || "N/A",
+        address: consignment.dropOffId?.address || "N/A",
         phone: consignment.dropOffId?.phone || "N/A",
       },
       weight: consignment.weight,
       COD: consignment.COD,
       price: consignment.price.toFixed(2),
-      date: formattedDate, 
-      day: day, 
+      date: formattedDate,
+      day: day,
     };
     generatePdf(formData);
   };

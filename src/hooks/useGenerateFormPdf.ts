@@ -5,8 +5,8 @@ import jsPDF from 'jspdf';
 const useGenerateFormPdf = () => {
   const generatePdf = useCallback(async (formData: any) => {
     try {
-    
-      const logoSrc = '/image.png'; 
+
+      const logoSrc = '/image.png';
       const logoBase64 = await new Promise<string>((resolve, reject) => {
         const img = new Image();
         img.src = logoSrc;
@@ -29,41 +29,51 @@ const useGenerateFormPdf = () => {
       container.style.position = 'absolute';
       container.style.left = '-9999px';
       container.style.top = '0';
-      container.style.width = '100%'; 
+      container.style.width = '100%';
       document.body.appendChild(container);
+      const weight: number = formData.weight;
+      const minPrice: number = Number(process.env.MINIMUM_PRICE) || 170;
+
+      const price = weight < 2 ? minPrice : ((weight - 1) * 30) + minPrice;
 
       container.innerHTML = `
         <div style="font-family: Arial, sans-serif; padding: 20px; display: flex; justify-content: center; align-items: ceter; flex-direction: column; class="Pdf">
-           <h1 style="text-align: center; font-size: 28px; margin-bottom: 20px; font-weight: bold;font-style: italic;">Receipt</h1>
-          <div style="text-align: center; justify-content: center; display: flex; align-items: center">
-            <img src="${logoBase64}" alt="Logo" style="width: 220px; height: 150px; margin-bottom: 20px;" />
-          </div>
+            <div style="background-color: black; color: white; display: flex; align-items: center; padding: 10px 20px; margin-bottom: 20px; ">
+    <h1 style="font-size: 28px; margin: 0; font-weight: bold; font-style: italic; flex: 1;">Receipt</h1>
+    <img src="${logoBase64}" alt="Logo" style="width: 220px; height: 150px; background-color: black;" />
+  </div>
           <h2>Pick-Up Details</h2>
           <p><strong>Name:</strong> ${formData.pickUp.name}</p>
+          <p><strong>Address:</strong> ${formData.pickUp.address}</p>
+          
           <p><strong>Phone:</strong> ${formData.pickUp.phone}</p>
+          
           <hr>
           <h2>Drop-Off Details</h2>
           <p><strong>Name:</strong> ${formData.dropOff.name}</p>
+          <p><strong>Address:</strong> ${formData.dropOff.address}</p>
+
           <p><strong>Phone:</strong> ${formData.dropOff.phone}</p>
           <hr>
           <h2>Consignment Details</h2>
           <p><strong>Weight:</strong> ${formData.weight}</p>
           <p><strong>COD:</strong> ${formData.COD}</p>
-          <p><strong>Total Price:</strong> ${(formData.weight * 10).toFixed(2)}</p>
+     <p><strong>Total Price:</strong> ${price}</p>
     <p><strong>Date:</strong> ${formData.date}</p>
           <p><strong>Day:</strong> ${formData.day}</p>
         </div>
       `;
 
+
       const canvas = await html2canvas(container, { scale: 2 });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
-        orientation: 'p', 
+        orientation: 'p',
         unit: 'mm',
-        format: 'a4', 
+        format: 'a4',
       });
 
-      const imgWidth = 210; 
+      const imgWidth = 210;
       const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
@@ -83,7 +93,7 @@ const useGenerateFormPdf = () => {
       pdf.save('consignment-receipt.pdf');
     } catch (error) {
       console.error('Failed to generate PDF:', error);
-    } 
+    }
   }, []);
 
   return { generatePdf };
